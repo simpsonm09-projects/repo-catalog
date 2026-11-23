@@ -31,9 +31,9 @@
     },
     {
       "name": "maxstack",
-      "tier": "plugin",
+      "tier": "tooling",
       "adopted": true,
-      "rationale": "Plugin publishing and workspace install."
+      "rationale": "Workspace AI installer and plugin publishing."
     },
     {
       "name": "org-ai-plugin",
@@ -61,9 +61,9 @@
     },
     {
       "name": "postman-test-utils",
-      "tier": "feature",
+      "tier": "tooling",
       "adopted": true,
-      "rationale": "Feature repository for Postman test utilities."
+      "rationale": "Offline Postman and newman suite."
     },
     {
       "name": "playwright-api-wrapper",
@@ -88,8 +88,8 @@
       "name": "fixture-go",
       "tier": "fixture",
       "adopted": true,
-      "agentAccess": "full",
-      "rationale": "Go item CRUD fixture; validates the full level."
+      "agentAccess": "merge",
+      "rationale": "Go item CRUD fixture; validates the merge level."
     },
     {
       "name": "fixture-rust",

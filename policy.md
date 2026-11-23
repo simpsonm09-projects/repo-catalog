@@ -1,9 +1,14 @@
 # Fleet policy
 
 The catalog answers which repositories the framework covers and what each one owes.
-The standard in [`repo-standard`](https://github.com/simpsonm09-projects/repo-standard)
-answers what conformance means. This page records the intent that GitHub cannot
-report, so the checks have something to check against.
+The normative standard is
+[`.github/standards/owner.md`](https://github.com/simpsonm09-projects/.github/blob/main/standards/owner.md),
+with [`core.md`](https://github.com/simpsonm09-projects/.github/blob/main/standards/core.md)
+applying in full.
+[`repo-standard`](https://github.com/simpsonm09-projects/repo-standard) holds the
+implementation: the reusable workflows, the checkers and the apply scripts. This page
+records the intent that GitHub cannot report, so the checks have something to check
+against.
 
 ## Tiers
 
@@ -51,24 +56,20 @@ otherwise the tier default.
 | --- | --- | --- |
 | `none` | Nothing. No credential reaches the organization repository. | No identity grant. |
 | `read` | Clone, fetch, read. | No agent App installation. The standard gives `none` and `read` no installation. |
-| `propose` | Push a branch and open a pull request, never merge. | Write access, the agent absent from the ruleset bypass list, and at least one required approval the agent cannot give. |
-| `merge` | Merge its own green pull requests, with no direct push to `main`. | The agent in the bypass list with mode `pull_request`. |
-| `full` | Push to `main` or change settings. | The agent in the bypass list with mode `always`. The agent App requests no `administration` permission, so it cannot change settings or rulesets. |
+| `propose` | Push a branch and open a pull request, never merge. | Write access, and the agent absent from every ruleset. |
+| `merge` | Merge its own green pull request through the API, with no direct push to `main`. | The App's repository-scoped token. Every required check and signature still applies. |
+| `full` | Nothing. Retired. | Not available to an agent, because it would need a `protect-main` bypass. A `full` entry is read as `merge`. |
 
-`propose` needs at least one required approval that the agent cannot give. The
-standard's committed [`protect-main.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/rulesets/protect-main.json)
-sets `required_approving_review_count` to `1`. Its only bypass actor is
-`OrganizationAdmin` in `pull_request` mode. This describes the committed file, not
-the live GitHub ruleset, which this catalog does not read. The agent App's bypass
-entry is not in that file. The standard's
+`protect-main` has no bypass actors, so no level grants a push to `main`, a merge of a
+red pull request, or a settings change. The committed
+[`protect-main.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/rulesets/protect-main.json)
+sets `required_approving_review_count` to `0` and carries an empty `bypass_actors` list.
+The merge gate is the required checks and the required signature, not a review count. The
+fleet App installation supplies a repository-scoped token for `propose` and `merge`; it
+requests no `administration` permission and appears in no ruleset. The standard's
 [`governance guide`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/governance.md)
 and its [`agent-access guide`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/features/agent-access.md)
 describe the App and the drift check.
-
-The fleet agent's GitHub App entry on each repository's `protect-main` ruleset follows the
-standard's [bypass actors table](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/governance.md#bypass-actors).
-It is absent for `none`, `read`, and `propose`, mode `pull_request` for `merge`, and mode
-`always` for `full`. No actor id is recorded here.
 
 ## Personally owned forks
 
@@ -77,6 +78,11 @@ each fork came from. It does not add a repository to the `simpsonm09-projects` r
 the organization membership reconciliation. Each entry names both repositories as
 fully qualified `owner/repository` identities. The target must belong to `simpsonm09`.
 The upstream records provenance and never grants write access.
+
+Those repositories are governed by the
+[`simpsonm09` owner standard](https://github.com/simpsonm09/simpsonm09/blob/main/.github/standards/owner.md),
+not by this organization's standard, which excludes personal repositories. The entry
+records provenance and agent intent only. It grants nothing.
 
 The collection accepts only `propose`. For a personally owned target, `propose` means an
 agent may push a branch and open a pull request. It does not allow merging or pushing to
@@ -98,7 +104,10 @@ Until then, pstack writes remain denied.
 which requires upstream provenance. Each record accepts only `repository` and
 `agentAccess`, and the only supported access level is `propose`. The validator rejects
 other owners, malformed identities, duplicates, unknown fields, and identities that
-collide with an owned-fork target or upstream.
+collide with an owned-fork target or upstream. The
+[`simpsonm09` owner standard](https://github.com/simpsonm09/simpsonm09/blob/main/.github/standards/owner.md)
+is the authority for these repositories. This organization's standard does not govern
+them, and the entry grants nothing.
 
 The committed policy grants `propose` to the exact identity `simpsonm09/simpsonm09`.
 That grant permits non-default branch pushes and pull requests within that same

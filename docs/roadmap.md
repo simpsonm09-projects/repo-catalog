@@ -32,7 +32,8 @@ not live counts.
 - Dependabot as the single updater.
 - Kotlin and Java in the shared lint table, so a JVM repository lints through the same job.
 - A generated-OpenAPI contract rule: an API repository emits its document from annotations, and the checker fails a hand edit or a missing `spec` recipe.
-- The standard's committed `protect-main.json` requires one approval. Live ruleset
+- The standard's committed `protect-main.json` requires no approval and carries no bypass
+  actors. The merge gate is the required checks and the required signature. Live ruleset
   deployment is not recorded here.
 
 ## Open
@@ -40,17 +41,18 @@ not live counts.
 - Language linting. Pin the per-language linters and formatters in each repository's
   `mise.toml` and run them through the shared lint job. See the standard's
   [`linting`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/linting.md).
-- CodeQL. A repository carries it when it has executable source in a language CodeQL
-  supports. It is never a required check. At the latest inventory review, CodeQL was
-  present on maxstack, dev-setup, and all four language fixtures. It was still missing
-  from `repo-template`. See the standard's
+- CodeQL. A repository uses CodeQL default setup when it has executable source in a
+  language CodeQL supports. It carries no `codeql.yml`, and it is never a required check.
+  At the latest inventory review, CodeQL was present on maxstack, dev-setup, and all four
+  language fixtures. `repo-template` relies on default setup. See the standard's
   [`automation`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/automation.md#codeql).
-- Coverage. A repository with a coverage job requires `coverage / coverage`. The three
-  current exceptions are `repo-catalog`, `simpsonm09-maxstack`, and `dev-setup`. The
-  maxstack and dev-setup exceptions need a coverage pilot because their Node code can be
-  measured. None of the three has a coverage job. The declaration is in the standard's
-  [`exceptions.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/exceptions.json).
-  This repository holds no second declaration.
+- Coverage. A repository with a coverage job requires `coverage / coverage`. `repo-catalog`
+  has no coverage job and declares `ci/coverage` in its own [`exceptions.md`](exceptions.md).
+  `simpsonm09-maxstack` and `dev-setup` still need a coverage pilot because their Node code
+  can be measured. A repository without a coverage job declares the exception locally in
+  `docs/exceptions.md`; the standard's
+  [`exceptions.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/exceptions.json)
+  remains the fallback.
 - Verification. Audit which repositories have a verification skill, image build smoke job,
   and end-to-end checks before defining the remaining gaps. Release workflows are present
   on browser-calculator, Postman test utils, and Playwright API wrapper; this does not by
@@ -59,13 +61,14 @@ not live counts.
   `postman-test-utils`, and `playwright-api-wrapper`. The other
   feature repositories and the fixtures have neither yet.
 - Plugin identifiers. Align the OpenCode plugin ids with the repository names.
-- Agent access. The agent identity is defined in `repo-standard`: the App manifest, the
-  `just create-agent-app` flow, the per-level bypass entry the ruleset apply script adds,
-  and the drift check `check-agent-access`. On 2026-10-15, the live drift check exited 0
-  for all 17 repositories in the catalog roster. The check is local and is not part of CI,
-  so run it again when rulesets change. Private-key storage remains unverified. Do not
-  infer storage from the drift check. The committed `protect-main.json` requires one
-  approval.
+- Agent access. Agent access is intent in this catalog, not a ruleset entry. The identity
+  is defined in `repo-standard`: the App manifest, the `just create-agent-app` flow, and the
+  drift check `check-agent-access`. On 2026-10-15, the live drift check exited 0 for all 17
+  repositories in the catalog roster. The check is local and is not part of CI, so run it
+  again when rulesets change. Private-key storage remains unverified. Do not infer storage
+  from the drift check. The committed `protect-main.json` has no bypass actors, so no level
+  grants a push to `main`; `merge` works through the App's repository-scoped token and the
+  required checks.
 
 ## How open work lands
 
