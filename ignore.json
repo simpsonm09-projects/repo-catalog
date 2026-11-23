@@ -15,6 +15,10 @@
     {
       "name": ".github",
       "reason": "Organization profile repository. It holds the public profile README and no code."
+    },
+    {
+      "name": "dev-setup",
+      "reason": "Archived. Workstations are Linux; machine setup lives in the sakuragaoka-homelab machine repositories."
     }
   ]
 }

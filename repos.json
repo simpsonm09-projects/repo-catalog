@@ -48,12 +48,6 @@
       "rationale": "Personal config layer."
     },
     {
-      "name": "dev-setup",
-      "tier": "tooling",
-      "adopted": true,
-      "rationale": "Developer workspace tooling and machine setup."
-    },
-    {
       "name": "browser-calculator",
       "tier": "feature",
       "adopted": true,

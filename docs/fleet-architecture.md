@@ -9,7 +9,7 @@ This page is the guiding document for the fleet. It names the four groups of rep
 | Group | Repositories | Answers |
 | --- | --- | --- |
 | AI tooling | `maxstack`, `pstack-max` (our fork of pstack-claude), `org-ai-plugin`, `personal-ai-plugin` | How does an agent session get its harness, its skills, and its rules? |
-| Human tooling | `dev-setup`, `postman-test-utils` | Which tools does the person have, and how does a command get a secret? |
+| Human tooling | `postman-test-utils` | Which tools does the person have, and how does a command get a secret? |
 | Reference | `repo-standard`, `repo-catalog`, `repo-template` | What is in the fleet, what does "done" mean, and what may an agent do? |
 | Feature | Every other repository | What does the fleet build? |
 
@@ -25,7 +25,7 @@ flowchart TB
     end
 
     subgraph Tooling["Human tooling"]
-        DevSetup["dev-setup<br/>tools, settings/.env, secret wrappers"]
+        Postman["postman-test-utils<br/>offline Postman suite"]
     end
 
     subgraph Reference["Reference"]
@@ -130,7 +130,7 @@ flowchart LR
     Layers["layers.json<br/>and the pstack pin"] --> Plan
     Plan --> Apply["Install or update"]
     Plan --> Remove["Remove"]
-    Apply --> CLIs["Harness CLIs and T3 Code<br/>winget or Brewfile"]
+    Apply --> CLIs["Harness CLIs and T3 Code<br/>Linux package manager"]
     Apply --> Config["Harness config<br/>in the workspace"]
     Apply --> T3Set["T3 provider instances<br/>and defaults"]
     Apply --> Lock["stack.lock.json"]
@@ -163,14 +163,14 @@ PStack began as Lauren Tan's original in `cursor/plugins`. Michael Denyer ported
 
 ## Human tooling
 
-`dev-setup` is for the person, not the agent. It has two jobs.
+`dev-setup` was the human tooling repository. It is retired as of 2026-11-23: every workstation is Linux, and the machine repositories under [`sakuragaoka-homelab`](https://github.com/sakuragaoka-homelab) own tool installs and app settings now. The archive still documents the setup it applied and ships the secret wrappers.
 
-- **Tooling.** It installs the tools a person uses on a machine and applies their app settings. `tools.yaml` is the one hand-edited source, and the Brewfile and the winget list render from it.
-- **Secrets consumption.** It owns `settings/.env` and the wrappers that hand a secret to one command. `with-secrets [--offline] [--require NAMES] <tool>` is the human path. Agents use `with-vault --role agent <tool>`, where the tool never holds the token.
+- **Tooling.** It installed the tools a person uses on a machine and applied their app settings. `tools.yaml` was the one hand-edited source.
+- **Secrets consumption.** It owned `settings/.env` and the wrappers that hand a secret to one command. `with-secrets [--offline] [--require NAMES] <tool>` is the human path. Agents use `with-vault --role agent <tool>`, where the tool never holds the token.
 
 `.envrc` is retired for now. A secret reaches a command through a wrapper, not through a shell that loaded everything on entry. `settings/.env` stays, with its committed `settings/.env.example`, so the bootstrap values and the list of expected names survive. The `.env` file holds only what unlocks the secret store plus a small offline fallback, and it is never committed.
 
-The boundary with maxstack is the harness. maxstack installs T3 Code and the harness CLIs. dev-setup installs everything else.
+The boundary with maxstack is the harness. maxstack installs T3 Code and the harness CLIs. The machine repositories install everything else.
 
 ## Reference
 
@@ -204,7 +204,7 @@ Every repository outside the three groups above is a feature repository. It cons
 | A skill, registry entry, or gate rule that applies to anyone in the fleet | `org-ai-plugin` |
 | An account, identity, or personal service | `personal-ai-plugin` |
 | Layer order, the pstack pin, a harness, a T3 default, a harness CLI install | `maxstack` |
-| A human tool, an app setting, a secret name, a wrapper | `dev-setup` |
+| A human tool, an app setting, a secret name, a wrapper | The `sakuragaoka-homelab` machine repositories |
 | A lint rule, a workflow, a ruleset, the definition of done | `repo-standard` |
 | A new repository, a tier, an agent access level | `repo-catalog` |
 | What a new repository starts with | `repo-template` |
@@ -218,16 +218,15 @@ Each row is a difference between the target above and what the repositories hold
 | --- | --- | --- |
 | Seven harnesses composed | `layers.json` composes four: Claude Code, Copilot, OpenCode, and Pi. T3 Code ships provider instances for Codex, Cursor, and Antigravity. maxstack adds its own instances only for Claude, Copilot, and Pi, and writes no config for Codex, Cursor, or Antigravity. | maxstack |
 | T3 defaults held in maxstack | The instances are a table in `docs/t3-setup.md` and are set by hand. | maxstack |
-| T3 snapshot in the workspace | T3 settings live in the user profile. The dev-setup snapshot records only whether that folder exists. | maxstack |
-| maxstack installs T3 Code and the harness CLIs | `tools.yaml` in dev-setup lists `t3-code`, `opencode`, and `claude-code`. The Brewfile also lives in dev-setup. | maxstack, dev-setup |
+| T3 snapshot in the workspace | T3 settings live in the user profile. The retired dev-setup snapshot records only whether that folder exists. | maxstack |
+| maxstack installs T3 Code and the harness CLIs | The retired dev-setup `tools.yaml` lists `t3-code`, `opencode`, and `claude-code`. The `sakuragaoka-homelab` machine repositories own the tool set now. | maxstack |
 | Workspace generated at any target | Discovery takes `-Workspace`, then `MAXSTACK_WORKSPACE`, then a marker file, then the script layout. The legacy fixed path is the last step. It prints a warning, and the fallback is removed after one release. | maxstack |
 | One settings file as the input | `maxstack.settings.json` selects runtimes and layers. Per-layer sources in the file are recorded but not applied. The T3 snapshot, the T3 defaults, and harness CLI installs are not built yet. | maxstack |
 | One lifecycle command on every OS | The installer is PowerShell and declares itself Windows-only. It has `-Apply`, `-Status`, `-Remove`, `-Uninstall`, `-Update`, and `-Update -Check`. It selects runtimes and layers with `-Runtimes` and `-Layers`, and it sets layer sources with `-Source` or `-LayerSource`. The macOS wrappers are untested. | maxstack |
 | Generated harness config from one source | A standalone neutral layer generator writes skills for `claude`, `copilot`, `opencode`, and `pi`, and OpenCode MCP servers for `opencode` only. The installer does not call it. Codex, Cursor, and Antigravity get nothing. Instructions, agents, and hooks are not generated yet. | maxstack |
-| `.envrc` does not load secrets | A human reaches a secret only through `with-secrets [--offline] [--require NAMES] <tool>`, and agents through `with-vault --role agent`. The plugin and maxstack docs say so. A leftover workspace-root `.envrc` that imports secrets still exists and must be removed by hand. `with-secrets` warns when it finds one. dev-setup still ships `settings/.envrc.example`, which is a migration note only. | dev-setup |
+| `.envrc` does not load secrets | A human reaches a secret only through `with-secrets [--offline] [--require NAMES] <tool>`, and agents through `with-vault --role agent`. The plugin and maxstack docs say so. A leftover workspace-root `.envrc` that imports secrets still exists and must be removed by hand. `with-secrets` warns when it finds one. The retired dev-setup archive still ships `settings/.envrc.example`, which is a migration note only. | `sakuragaoka-homelab` |
 | Each model path is in the ownership record | The installer writes the Pi wrappers and records them in `stack.lock.json`. It uses a Pi installed in the workspace when one exists. The local model server and its Pi provider file are not owned by maxstack's ownership record yet. | maxstack |
 | The gate runs in every harness that can run a pre-tool hook | The gate runs in Claude Code, Copilot, OpenCode, and Pi only. There is no gate on Codex, Cursor, or Antigravity. See G1 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
-| pstack's own pre-tool checks run on every OS | The Copilot PreToolUse hook is a no-op stub on Windows for pstack's own checks, so the file-read and subagent-model checks do not run there. See G2 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
 | The gate fails closed on every path | The gate has paths that fail open silently. Claude allows a call when its hook is killed at the timeout, and a call runs with no gate and no error when `node` is not on the hook shell's PATH. See G3 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
 | The gate's live path is proven on every harness that runs it | The OpenCode gate path is not proven end to end. OpenCode rewrites a denied command and does not block it, and the rewrite is not measured live. See G4 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
 
@@ -236,5 +235,4 @@ Each row is a difference between the target above and what the repositories hold
 ## Open decisions
 
 - **Where the T3 snapshot lives.** T3 Code reads its settings from the user profile. Either maxstack copies an allowlisted snapshot into the workspace, or T3 Code is pointed at a workspace folder if it supports that. The first works today.
-- **How `tools.yaml` splits.** Either the harness entries move to maxstack, or maxstack reads them from dev-setup. Moving them keeps the rule that the two manifests never read each other.
-- **Whether WSL keeps a loader.** Without `.envrc`, a WSL shell loads nothing on entry. The wrappers cover single commands. A long-lived server that needs a secret needs another answer.
+- **How `tools.yaml` splits.** Either the harness entries move to maxstack, or maxstack reads them from the retired dev-setup archive. Moving them keeps the rule that the two manifests never read each other.
