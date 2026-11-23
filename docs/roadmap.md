@@ -48,8 +48,8 @@ not live counts.
   [`automation`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/automation.md#codeql).
 - Coverage. A repository with a coverage job requires `coverage / coverage`. `repo-catalog`
   has no coverage job and declares `ci/coverage` in its own [`exceptions.md`](exceptions.md).
-  `simpsonm09-maxstack` and `dev-setup` still need a coverage pilot because their Node code
-  can be measured. A repository without a coverage job declares the exception locally in
+  `simpsonm09-maxstack` still needs a coverage pilot because its Node code can be
+  measured. A repository without a coverage job declares the exception locally in
   `docs/exceptions.md`; the standard's
   [`exceptions.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/exceptions.json)
   remains the fallback.
