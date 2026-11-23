@@ -32,7 +32,8 @@ which covers the tree-local files plus the settings, topics, and ruleset the
 repository can read about itself. No repository audits another.
 
 A repository may add a second test job named `test-<suffix>`. maxstack runs its installer
-suite as `test-node` on a Windows runner, in addition to `test`.
+suite as `test-node` and its POSIX fixture lifecycle as `test-linux`, both on Linux, in
+addition to `test`.
 
 ## Membership
 
