@@ -43,13 +43,12 @@ not live counts.
 - CodeQL. A repository carries it when it has executable source in a language CodeQL
   supports. It is never a required check. At the latest inventory review, CodeQL was
   present on maxstack, dev-setup, and all four language fixtures. It was still missing
-  from `machine-inventory` and `repo-template`. See the standard's
+  from `repo-template`. See the standard's
   [`automation`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/automation.md#codeql).
-- Coverage. A repository with a coverage job requires `coverage / coverage`. The four
-  current exceptions are `repo-catalog`, `machine-inventory`,
-  `simpsonm09-maxstack`, and `dev-setup`. The maxstack and dev-setup exceptions
-  need a coverage pilot because their Node code can be measured. None of the four has a
-  coverage job. The declaration is in the standard's
+- Coverage. A repository with a coverage job requires `coverage / coverage`. The three
+  current exceptions are `repo-catalog`, `simpsonm09-maxstack`, and `dev-setup`. The
+  maxstack and dev-setup exceptions need a coverage pilot because their Node code can be
+  measured. None of the three has a coverage job. The declaration is in the standard's
   [`exceptions.json`](https://github.com/simpsonm09-projects/repo-standard/blob/main/docs/exceptions.json).
   This repository holds no second declaration.
 - Verification. Audit which repositories have a verification skill, image build smoke job,
