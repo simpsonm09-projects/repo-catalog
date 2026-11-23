@@ -54,12 +54,6 @@
       "rationale": "Developer workspace tooling and machine setup."
     },
     {
-      "name": "machine-inventory",
-      "tier": "tooling",
-      "adopted": true,
-      "rationale": "Non-identifying inventory of the fleet machine classes, counts, and buckets."
-    },
-    {
       "name": "browser-calculator",
       "tier": "feature",
       "adopted": true,
@@ -76,12 +70,6 @@
       "tier": "feature",
       "adopted": true,
       "rationale": "Feature repository for a Playwright API wrapper."
-    },
-    {
-      "name": "openclaw-homelab",
-      "tier": "feature",
-      "adopted": true,
-      "rationale": "Feature repository for the homelab."
     },
     {
       "name": "pokeapi-wrapper",

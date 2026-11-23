@@ -10,11 +10,7 @@
     },
     {
       "name": "pdf-field-automation-acrobat",
-      "reason": "Legacy public repository that predates the standard."
-    },
-    {
-      "name": "steam-wishlist-cleanup",
-      "reason": "Legacy public repository that predates the standard."
+      "reason": "Archived legacy public repository that predates the standard."
     },
     {
       "name": ".github",

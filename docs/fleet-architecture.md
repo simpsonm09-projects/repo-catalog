@@ -193,9 +193,8 @@ Every repository outside the three groups above is a feature repository. It cons
 
 | Kind | Repositories | Note |
 | --- | --- | --- |
-| Feature | `browser-calculator`, `postman-test-utils`, `playwright-api-wrapper`, `pokeapi-wrapper`, `openclaw-homelab` | Products. |
+| Feature | `browser-calculator`, `postman-test-utils`, `playwright-api-wrapper`, `pokeapi-wrapper` | Products. |
 | Fixture | `fixture-nest`, `fixture-go`, `fixture-rust`, `fixture-dotnet` | One each for the `read`, `propose`, `merge`, and `full` levels. They validate the framework and are not products. |
-| Tooling data | `machine-inventory` | Read by the org layer. |
 | Third-party forks | `pstack-max` | Kept for reference and local patches. Outside the roster, and never a pull request target upstream. |
 
 ## Where a change goes
