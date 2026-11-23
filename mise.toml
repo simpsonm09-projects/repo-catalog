@@ -18,9 +18,6 @@
 # Node runs the validator and the repository scripts.
 node = "26.13.1"
 
-# AI-slop gate, pinned so CI resolves no version at run time (C7.2).
-"npm:aislop" = "0.16.1"
-
 # Linters
 "aqua:grafana/flint" = "0.22.14"
 biome = "2.5.14"
