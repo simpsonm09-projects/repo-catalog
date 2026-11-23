@@ -38,9 +38,9 @@ aislop:
 test:
     mise run test
 
-# Run the local policy and agent-file tests without querying GitHub.
+# Run the local agent-file tests without querying GitHub.
 test-policy:
-    mise exec -- node --test test/owned-forks.test.mjs test/owned-repositories.test.mjs scripts/agent-files.test.mjs
+    mise exec -- node --test scripts/agent-files.test.mjs
 
 # Everything CI requires.
 check: fmt-check lint test test-policy

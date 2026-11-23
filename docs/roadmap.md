@@ -61,14 +61,10 @@ not live counts.
   `postman-test-utils`, and `playwright-api-wrapper`. The other
   feature repositories and the fixtures have neither yet.
 - Plugin identifiers. Align the OpenCode plugin ids with the repository names.
-- Agent access. Agent access is intent in this catalog, not a ruleset entry. The identity
-  is defined in `repo-standard`: the App manifest, the `just create-agent-app` flow, and the
-  drift check `check-agent-access`. On 2026-10-15, the live drift check exited 0 for all 17
-  repositories in the catalog roster. The check is local and is not part of CI, so run it
-  again when rulesets change. Private-key storage remains unverified. Do not infer storage
-  from the drift check. The committed `protect-main.json` has no bypass actors, so no level
-  grants a push to `main`; `merge` works through the App's repository-scoped token and the
-  required checks.
+- Agent access. Retired on 2026-11-23 with the `simpsonm09-fleet-agent` App. Agents use the
+  owner's own accounts, and the committed `protect-main.json` has no bypass actors, so a
+  push to `main` or a settings change fails at GitHub. The rulesets, required checks, hooks
+  and the standard are the boundary.
 
 ## How open work lands
 

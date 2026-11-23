@@ -3,8 +3,6 @@ import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateOwnedForks } from "./owned-forks.mjs";
-import { validateOwnedRepositories } from "./owned-repositories.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -18,8 +16,6 @@ const TIERS = [
   "fixture",
   "legacy",
 ];
-// `full` is retired: no level grants a push to main or a settings change.
-const LEVELS = ["none", "read", "propose", "merge"];
 
 function readJson(name) {
   return JSON.parse(readFileSync(join(ROOT, name), "utf8"));
@@ -36,23 +32,10 @@ function listOrgRepos(org) {
 
 const roster = readJson("repos.json");
 const ignore = readJson("ignore.json");
-const ownedForks = readJson("owned-forks.json");
-const ownedRepositories = readJson("owned-repositories.json");
 // The organization may be renamed out of band, and the roster keeps the name it
 // was written with. In Actions, validate the owner that actually served the
 // checkout; locally, fall back to the roster's canonical name.
 const org = process.env.GITHUB_REPOSITORY_OWNER || roster.org;
-const ownedForkErrors = validateOwnedForks(ownedForks);
-const ownedRepositoryErrors = validateOwnedRepositories(
-  ownedRepositories,
-  ownedForks,
-);
-const policyErrors = [...ownedForkErrors, ...ownedRepositoryErrors];
-if (policyErrors.length > 0) {
-  for (const error of policyErrors)
-    process.stderr.write(`validate: ${error}\n`);
-  process.exit(1);
-}
 const live = listOrgRepos(org);
 
 const rosterNames = new Set(roster.repos.map((entry) => entry.name));
@@ -66,6 +49,8 @@ for (const entry of roster.repos) {
     errors.push(`roster entry ${entry.name} is not a repository in ${org}`);
   if (ignoreNames.has(entry.name))
     errors.push(`${entry.name} is both in the roster and in ignore.json`);
+  if (!TIERS.includes(entry.tier))
+    errors.push(`${entry.name} has an unknown tier: ${entry.tier}`);
 }
 
 for (const entry of ignore.ignore) {
@@ -86,39 +71,10 @@ for (const entry of live) {
   }
 }
 
-const defaults = roster.agentAccessDefaults ?? {};
-for (const tier of TIERS) {
-  if (!(tier in defaults))
-    errors.push(`agentAccessDefaults is missing the ${tier} tier`);
-}
-for (const [tier, level] of Object.entries(defaults)) {
-  if (!TIERS.includes(tier))
-    errors.push(`agentAccessDefaults has an unknown tier: ${tier}`);
-  if (!LEVELS.includes(level))
-    errors.push(`agentAccessDefaults.${tier} is not a level: ${level}`);
-}
-
-const levelCounts = new Map();
-for (const entry of roster.repos) {
-  if (!TIERS.includes(entry.tier))
-    errors.push(`${entry.name} has an unknown tier: ${entry.tier}`);
-  if (entry.agentAccess !== undefined && !LEVELS.includes(entry.agentAccess)) {
-    errors.push(
-      `${entry.name} has an unknown agentAccess: ${entry.agentAccess}`,
-    );
-  }
-  const level = entry.agentAccess ?? defaults[entry.tier];
-  if (LEVELS.includes(level))
-    levelCounts.set(level, (levelCounts.get(level) ?? 0) + 1);
-}
-
 if (errors.length > 0) {
   for (const error of errors) process.stderr.write(`validate: ${error}\n`);
   process.exit(1);
 }
-const levels = LEVELS.filter((level) => levelCounts.has(level))
-  .map((level) => `${level} ${levelCounts.get(level)}`)
-  .join(", ");
 process.stdout.write(
-  `validate: ok (${roster.repos.length} roster, ${ignore.ignore.length} ignored, ${live.length} in ${org}; ${levels})\n`,
+  `validate: ok (${roster.repos.length} roster, ${ignore.ignore.length} ignored, ${live.length} in ${org})\n`,
 );
