@@ -112,7 +112,6 @@ The current gaps, as [maxstack's T3 setup](https://github.com/simpsonm09-project
 
 - Codex is not set up. maxstack writes no Codex runtime, config, or T3 instance.
 - Cursor and Antigravity receive none of the layers yet.
-- GitHub Copilot's pre-tool hook is a no-op on Windows for pstack's own checks (G2 in the parity matrix).
 - MCP writers are not built for Claude Code, Copilot, Pi, or Codex, so the composed MCP set is empty (G18).
 - Repo-local subagent profiles exist only for OpenCode (G19).
 
@@ -146,7 +145,7 @@ maxstack has six jobs.
 | Hold the T3 defaults | The T3 Code setup the fleet wants lives in maxstack as a file. The defaults file names the provider instances and the app defaults. It sets no model. The T3 settings keys `defaultModelSelection` and `textGenerationModelSelection` are left to the person. It holds no secret and no machine path. |
 | Generate a workspace | Given a target directory, maxstack installs T3 Code, then applies either the T3 defaults or the maxstack defaults. The target is an argument, not a fixed path. |
 | Set up the harnesses | For each harness the settings select, maxstack writes the config that harness needs on this OS: plugin folders, wrappers, agent folders, and the matching T3 provider instance. A harness the settings leave out gets nothing. |
-| Install the CLIs | maxstack installs T3 Code and each selected harness CLI with the OS package manager. It uses winget on Windows and a Brewfile on macOS. |
+| Install the CLIs | maxstack installs T3 Code and each selected harness CLI with the Linux package manager. |
 | Manage its own lifecycle | Install, update, and remove are one command with one plan. Each run converges on the same end state, so a second run changes nothing. Remove deletes only what the lock file records. Update applies a change in the settings, the layers, or the pin. |
 | Snapshot T3 | maxstack reads the live T3 settings and writes a snapshot into the workspace. The snapshot excludes logins, tokens, and session history. A diff of the snapshot against the defaults is the drift report. |
 
@@ -232,7 +231,7 @@ Each row is a difference between the target above and what the repositories hold
 | The gate fails closed on every path | The gate has paths that fail open silently. Claude allows a call when its hook is killed at the timeout, and a call runs with no gate and no error when `node` is not on the hook shell's PATH. See G3 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
 | The gate's live path is proven on every harness that runs it | The OpenCode gate path is not proven end to end. OpenCode rewrites a denied command and does not block it, and the rewrite is not measured live. See G4 in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). | org-ai-plugin, maxstack |
 
-**Sequence.** The work runs in this order. First, per-layer sources in the settings file. Then the read-only T3 snapshot and the drift report. Then harness CLI installs, with ownership. maxstack records only the CLIs it installed, and it never removes a CLI the person installed. Then T3 apply. Then macOS. Then the generator is wired into the installer. Then agents and hooks conversion. Cursor is the first new harness.
+**Sequence.** The work runs in this order. First, per-layer sources in the settings file. Then the read-only T3 snapshot and the drift report. Then harness CLI installs, with ownership. maxstack records only the CLIs it installed, and it never removes a CLI the person installed. Then T3 apply. Then the generator is wired into the installer. Then agents and hooks conversion. Cursor is the first new harness.
 
 ## Open decisions
 
