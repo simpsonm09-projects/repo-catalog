@@ -13,6 +13,13 @@ It holds the repositories tracked under the fleet framework, the tier of each on
 the adoption status, and the policy for the tiers. The standard holds the checks.
 This repository holds only the intent that GitHub cannot report.
 
+The normative policy is the
+[`simpsonm09-projects` owner standard](https://github.com/simpsonm09-projects/.github/blob/main/standards/owner.md),
+with [`core.md`](https://github.com/simpsonm09-projects/.github/blob/main/standards/core.md)
+applying in full. [`repo-standard`](https://github.com/simpsonm09-projects/repo-standard)
+holds the implementation. Personal repositories in `simpsonm09` are governed by the
+[`simpsonm09` owner standard](https://github.com/simpsonm09/simpsonm09/blob/main/.github/standards/owner.md).
+
 ## Layout
 
 - `repos.json` is the roster.
@@ -25,19 +32,29 @@ This repository holds only the intent that GitHub cannot report.
 ## Quick start
 
 ```bash
-just install
-just verify
+just install    # install the pinned tools with mise
+just check      # everything CI requires
 ```
 
 ## Commands
 
-| Command | Does |
+| Recipe | Does |
 | --- | --- |
-| `just install` | Installs the pinned tools. |
-| `just lint` | Runs the linters. |
+| `just` | Lists the recipes. |
+| `just install` | Installs the pinned tools with `mise install`. |
+| `just fmt` | Formats with Biome. |
+| `just fmt-check` | Checks formatting with Biome. |
+| `just lint` | Runs flint over the tracked files. |
+| `just complexity` | Runs the Biome complexity gate. |
 | `just test` | Validates the roster against the organization. |
-| `just test-policy` | Runs local owned-target policy tests without querying GitHub. |
-| `just verify` | Lints and tests. |
+| `just test-policy` | Runs the local policy and agent-file tests without querying GitHub. |
+| `just check` | Runs everything CI requires. |
+| `just hooks` | Installs the guarded git hook. |
+| `just agent-files` | Checks `.agents/skills/` against `.claude/skills/`. |
+| `just prune` | Deletes local branches merged into `main`. |
+
+`just verify` stays as an alias for `just check`, because the shared `SUPPORT.md`
+names it.
 
 ## Documentation
 

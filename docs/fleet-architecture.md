@@ -9,7 +9,7 @@ This page is the guiding document for the fleet. It names the four groups of rep
 | Group | Repositories | Answers |
 | --- | --- | --- |
 | AI tooling | `maxstack`, `pstack-max` (our fork of pstack-claude), `org-ai-plugin`, `personal-ai-plugin` | How does an agent session get its harness, its skills, and its rules? |
-| Human tooling | `dev-setup` | Which tools does the person have, and how does a command get a secret? |
+| Human tooling | `dev-setup`, `postman-test-utils` | Which tools does the person have, and how does a command get a secret? |
 | Reference | `repo-standard`, `repo-catalog`, `repo-template` | What is in the fleet, what does "done" mean, and what may an agent do? |
 | Feature | Every other repository | What does the fleet build? |
 
@@ -185,7 +185,7 @@ The three reference repositories describe the fleet. They do not run it.
 
 The catalog holds intent, and the standard holds checks. Each repository runs the checks against itself in its own CI. No repository audits another.
 
-Agent access is one value per repository: `none`, `read`, `propose`, `merge`, or `full`. The catalog sets a default per tier, and a repository may override it. The org layer's gate reads the level and applies it to each tool call in every harness that can run a pre-tool hook. See [`policy.md`](../policy.md).
+Agent access is one value per repository: `none`, `read`, `propose`, or `merge`. `full` is retired, and a `full` entry is read as `merge`, because no level may grant a push to `main` or a settings change. The catalog sets a default per tier, and a repository may override it. The org layer's gate reads the level and applies it to each tool call in every harness that can run a pre-tool hook. See [`policy.md`](../policy.md).
 
 ## Feature
 
@@ -193,9 +193,9 @@ Every repository outside the three groups above is a feature repository. It cons
 
 | Kind | Repositories | Note |
 | --- | --- | --- |
-| Feature | `browser-calculator`, `postman-test-utils`, `playwright-api-wrapper`, `pokeapi-wrapper` | Products. |
-| Fixture | `fixture-nest`, `fixture-go`, `fixture-rust`, `fixture-dotnet` | One each for the `read`, `propose`, `merge`, and `full` levels. They validate the framework and are not products. |
-| Third-party forks | `pstack-max` | Kept for reference and local patches. Outside the roster, and never a pull request target upstream. |
+| Feature | `browser-calculator`, `playwright-api-wrapper`, `pokeapi-wrapper` | Products. |
+| Fixture | `fixture-nest`, `fixture-go`, `fixture-rust`, `fixture-dotnet` | They cover the `read`, `propose` and `merge` levels. They validate the framework and are not products. |
+| Third-party forks | `pstack-max` | Kept for reference and local patches in the `simpsonm09` account. Outside the roster, and never a pull request target upstream. |
 
 ## Where a change goes
 

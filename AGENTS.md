@@ -11,11 +11,11 @@ The fleet roster and policy. It holds intent, not state.
 
 ## Commands
 
-- `just lint`, `just test`, `just verify`.
+- `just fmt-check`, `just lint`, `just test`, `just test-policy`, `just check`, `just agent-files`.
 
 ## Repo facts
 
-- Language and toolchain: Node for the validator, pinned in `mise.toml`.
+- Language and toolchain: Node for the validator and the `.mjs` helpers, pinned in `mise.toml`. Biome formats and gates complexity until the Bun toolchain migration recorded in `docs/exceptions.md`.
 - `repos.json` is the roster. `ignore.json` is the exclusion list. `policy.md` is the tier policy.
 
 ## Skills

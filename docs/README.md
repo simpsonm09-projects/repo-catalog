@@ -15,6 +15,7 @@ Index for the catalog.
 - [`../owned-forks.json`](../owned-forks.json) records owned forks and their upstreams.
 - [`../owned-repositories.json`](../owned-repositories.json) records exact owned repositories without upstreams.
 - [`../policy.md`](../policy.md) is the tier policy.
+- [Exceptions](exceptions.md) records the rules this repository does not meet yet.
 
 ## Features
 
