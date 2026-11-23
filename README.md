@@ -24,10 +24,8 @@ holds the implementation. Personal repositories in `simpsonm09` are governed by 
 
 - `repos.json` is the roster.
 - `ignore.json` lists the organization repositories that are out of the fleet.
-- `owned-forks.json` records personally owned forks and their upstream repositories.
-- `owned-repositories.json` records exact personal repository identities without upstreams.
 - `policy.md` describes the tiers and the expectations.
-- `scripts/validate.mjs` validates both owned-target policies locally, then checks the roster against the organization.
+- `scripts/validate.mjs` checks the roster and the ignore list against the organization.
 
 ## Quick start
 
@@ -47,7 +45,7 @@ just check      # everything CI requires
 | `just lint` | Runs flint over the tracked files. |
 | `just complexity` | Runs the Biome complexity gate. |
 | `just test` | Validates the roster against the organization. |
-| `just test-policy` | Runs the local policy and agent-file tests without querying GitHub. |
+| `just test-policy` | Runs the local agent-file tests without querying GitHub. |
 | `just check` | Runs everything CI requires. |
 | `just hooks` | Installs the guarded git hook. |
 | `just agent-files` | Checks `.agents/skills/` against `.claude/skills/`. |

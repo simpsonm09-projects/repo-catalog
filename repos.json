@@ -1,15 +1,5 @@
 {
   "org": "simpsonm09-projects",
-  "agentAccessDefaults": {
-    "standard": "merge",
-    "template": "merge",
-    "catalog": "merge",
-    "plugin": "merge",
-    "tooling": "merge",
-    "feature": "merge",
-    "fixture": "read",
-    "legacy": "none"
-  },
   "repos": [
     {
       "name": "repo-standard",
@@ -75,29 +65,25 @@
       "name": "fixture-nest",
       "tier": "fixture",
       "adopted": true,
-      "agentAccess": "propose",
-      "rationale": "NestJS item CRUD fixture; validates the propose level."
+      "rationale": "NestJS item CRUD fixture."
     },
     {
       "name": "fixture-go",
       "tier": "fixture",
       "adopted": true,
-      "agentAccess": "merge",
-      "rationale": "Go item CRUD fixture; validates the merge level."
+      "rationale": "Go item CRUD fixture."
     },
     {
       "name": "fixture-rust",
       "tier": "fixture",
       "adopted": true,
-      "agentAccess": "merge",
-      "rationale": "Rust item CRUD fixture; validates the merge level."
+      "rationale": "Rust item CRUD fixture."
     },
     {
       "name": "fixture-dotnet",
       "tier": "fixture",
       "adopted": true,
-      "agentAccess": "read",
-      "rationale": "C# item CRUD fixture; validates the read level."
+      "rationale": "C# item CRUD fixture."
     }
   ]
 }

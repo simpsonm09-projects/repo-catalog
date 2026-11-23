@@ -10,7 +10,7 @@ This page is the guiding document for the fleet. It names the four groups of rep
 | --- | --- | --- |
 | AI tooling | `maxstack`, `pstack-max` (our fork of pstack-claude), `org-ai-plugin`, `personal-ai-plugin` | How does an agent session get its harness, its skills, and its rules? |
 | Human tooling | `postman-test-utils` | Which tools does the person have, and how does a command get a secret? |
-| Reference | `repo-standard`, `repo-catalog`, `repo-template` | What is in the fleet, what does "done" mean, and what may an agent do? |
+| Reference | `repo-standard`, `repo-catalog`, `repo-template` | What is in the fleet, what does "done" mean, and what does a conforming repository look like? |
 | Feature | Every other repository | What does the fleet build? |
 
 ```mermaid
@@ -29,7 +29,7 @@ flowchart TB
     end
 
     subgraph Reference["Reference"]
-        Catalog["repo-catalog<br/>roster, tiers, agent access"]
+        Catalog["repo-catalog<br/>roster and tiers"]
         Standard["repo-standard<br/>checks, workflows, rulesets"]
         Template["repo-template<br/>reference implementation"]
     end
@@ -50,7 +50,6 @@ flowchart TB
     Human --> T3
     T3 -- "sessions" --> Features
     DevSetup -- "tools and secrets" --> Human
-    Catalog -- "agent access level" --> Org
     Standard -- "gates and CI" --> Features
     Template -- "starting point" --> Features
     Catalog -- "roster" --> Features
@@ -89,12 +88,12 @@ flowchart LR
 
 Claude Code uses the Anthropic subscription, and Codex uses the OpenAI one. Those are the two paid accounts. Copilot, Cursor and Antigravity run on free usage. OpenCode uses the providers the user has connected in OpenCode. Pi uses a locally hosted model. maxstack sets no model and no provider for any harness.
 
-Pi is the validation harness. It loads no third-party extensions. Its only extensions are the org gate and pstack's own Pi extension. It also loads the skills of all three layers, and the user-level agent skills folder, which `PI_CODING_AGENT_DIR` does not isolate.
+Pi is the validation harness. It loads the skills of all three layers and the user-level agent skills folder, which `PI_CODING_AGENT_DIR` does not isolate. PStack ships the only Pi extension.
 
 The three plugin layers load in order, and a later layer wins where two layers set the same value.
 
 1. `pstack` is the base layer. It comes from the `plugins/pstack` folder of pstack-max at one pinned commit.
-2. `org-ai-plugin` is the general layer. It holds the skills, the integration registry, and the tool-call gate that apply to any person or machine.
+2. `org-ai-plugin` is the general layer. It holds the skills and the integration registry that apply to any person or machine.
 3. `personal-ai-plugin` is the person and machine layer. It holds the skills that name one person's accounts and one machine.
 
 One layer is one plugin in every harness. Edit a layer in its own repository, never in an installed copy.
@@ -105,7 +104,7 @@ The fleet sorts its harnesses into two tiers. Each harness uses its own provider
 
 | Tier | Harnesses | Receives |
 | --- | --- | --- |
-| First | OpenCode, Codex, Claude Code, GitHub Copilot | The full set from the layers: skills, agents, hooks or gate, MCP servers, and instructions. Each piece a harness does not receive has a documented reason. |
+| First | OpenCode, Codex, Claude Code, GitHub Copilot | The full set from the layers: skills, agents, hooks, MCP servers, and instructions. Each piece a harness does not receive has a documented reason. |
 | Second | Pi, Cursor, Antigravity | Skills and instructions at minimum. Gaps are recorded in the [parity matrix](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/parity-matrix.md). |
 
 The current gaps, as [maxstack's T3 setup](https://github.com/simpsonm09-projects/maxstack/blob/main/docs/t3-setup.md) and the parity matrix record them:
@@ -156,7 +155,7 @@ The workspace rule follows from these jobs. Settings live in the workspace, not 
 | Repository | Owns | Does not own |
 | --- | --- | --- |
 | `pstack-max` | The PStack plugin for every harness: skills, playbooks, hooks, and agent profiles. | The pin. maxstack holds it. |
-| `org-ai-plugin` | General skills, the integration registry, and the gate that enforces the catalog's agent access level. | Any value that names a person, an account, or a machine. |
+| `org-ai-plugin` | General skills and the integration registry. | Any value that names a person, an account, or a machine. |
 | `personal-ai-plugin` | The personal concretes: accounts, identities, and personal services. | A secret value. It says where a value comes from. |
 
 PStack began as Lauren Tan's original in `cursor/plugins`. Michael Denyer ported it to Claude Code as pstack-claude, and pstack-max is our fork of that port. Changes stay in pstack-max. `chhoumann/t3-pstack` is a reference for a planned optional T3 dispatch overlay; nothing was copied from it. No pull request goes to a repository the organization does not own.
@@ -178,13 +177,13 @@ The three reference repositories describe the fleet. They do not run it.
 
 | Repository | Answers | Holds |
 | --- | --- | --- |
-| `repo-catalog` | What is in the fleet, and what may an agent do in each repository? | The roster, the tiers, and the agent access levels. |
+| `repo-catalog` | What is in the fleet, and what tier does each repository hold? | The roster, the tiers, and the tier policy. |
 | `repo-standard` | What is best practice, and what does "done" mean? | The per-language lint and test rules, the reusable GitHub Actions workflows, the rulesets, and the conformance checker. |
 | `repo-template` | What does a conforming repository look like? | A working reference implementation to start a new repository from. |
 
 The catalog holds intent, and the standard holds checks. Each repository runs the checks against itself in its own CI. No repository audits another.
 
-Agent access is one value per repository: `none`, `read`, `propose`, or `merge`. `full` is retired, and a `full` entry is read as `merge`, because no level may grant a push to `main` or a settings change. The catalog sets a default per tier, and a repository may override it. The org layer's gate reads the level and applies it to each tool call in every harness that can run a pre-tool hook. See [`policy.md`](../policy.md).
+Agents use the owner's own accounts. There is no organization App, installation token, or per-repository access level. The rulesets, required checks and hooks are the boundary, so a write an agent should not make fails at GitHub. See [`policy.md`](../policy.md).
 
 ## Feature
 
@@ -193,7 +192,7 @@ Every repository outside the three groups above is a feature repository. It cons
 | Kind | Repositories | Note |
 | --- | --- | --- |
 | Feature | `browser-calculator`, `playwright-api-wrapper`, `pokeapi-wrapper` | Products. |
-| Fixture | `fixture-nest`, `fixture-go`, `fixture-rust`, `fixture-dotnet` | They cover the `read`, `propose` and `merge` levels. They validate the framework and are not products. |
+| Fixture | `fixture-nest`, `fixture-go`, `fixture-rust`, `fixture-dotnet` | They validate the framework and are not products. |
 | Third-party forks | `pstack-max` | Kept for reference and local patches in the `simpsonm09` account. Outside the roster, and never a pull request target upstream. |
 
 ## Where a change goes
@@ -201,12 +200,12 @@ Every repository outside the three groups above is a feature repository. It cons
 | The change | Repository |
 | --- | --- |
 | A skill, playbook, or hook that applies to any PStack user | `pstack-max` |
-| A skill, registry entry, or gate rule that applies to anyone in the fleet | `org-ai-plugin` |
+| A skill or registry entry that applies to anyone in the fleet | `org-ai-plugin` |
 | An account, identity, or personal service | `personal-ai-plugin` |
 | Layer order, the pstack pin, a harness, a T3 default, a harness CLI install | `maxstack` |
 | A human tool, an app setting, a secret name, a wrapper | The `sakuragaoka-homelab` machine repositories |
 | A lint rule, a workflow, a ruleset, the definition of done | `repo-standard` |
-| A new repository, a tier, an agent access level | `repo-catalog` |
+| A new repository or a tier | `repo-catalog` |
 | What a new repository starts with | `repo-template` |
 | Product behavior | The feature repository |
 
