@@ -48,6 +48,43 @@ export function readFrontmatter(text) {
   return fields;
 }
 
+function checkSkill(name, canonical, gaps) {
+  const file = join(canonical, name, "SKILL.md");
+  if (!existsSync(file)) {
+    gaps.push(`skill-missing: ${name} has no SKILL.md`);
+    return;
+  }
+  const fields = readFrontmatter(readFileSync(file, "utf8"));
+  if (!fields) {
+    gaps.push(`skill-frontmatter: ${name}/SKILL.md has no frontmatter`);
+    return;
+  }
+  if (fields.name !== name)
+    gaps.push(`skill-name: ${name}/SKILL.md names "${fields.name ?? ""}"`);
+  if (!fields.description)
+    gaps.push(`skill-description: ${name}/SKILL.md has no description`);
+}
+
+function checkLink(name, links, skills, gaps) {
+  const link = join(links, name);
+  if (!lstatSync(link).isSymbolicLink()) {
+    gaps.push(`skill-link: .claude/skills/${name} is not a symlink`);
+    return;
+  }
+  if (!skills.includes(name)) {
+    gaps.push(
+      `skill-link: .claude/skills/${name} has no .agents/skills/${name}`,
+    );
+    return;
+  }
+  const target = readlinkSync(link);
+  const expected = join("..", "..", ".agents", "skills", name);
+  if (target !== expected)
+    gaps.push(
+      `skill-link: .claude/skills/${name} points at ${target}, not ${expected}`,
+    );
+}
+
 // Return one message per difference between the two skill trees.
 export function checkAgentFiles(root = ROOT) {
   const gaps = [];
@@ -57,43 +94,10 @@ export function checkAgentFiles(root = ROOT) {
     isDirectory(join(canonical, name)),
   );
 
-  for (const name of skills) {
-    const file = join(canonical, name, "SKILL.md");
-    if (!existsSync(file)) {
-      gaps.push(`skill-missing: ${name} has no SKILL.md`);
-      continue;
-    }
-    const fields = readFrontmatter(readFileSync(file, "utf8"));
-    if (!fields) {
-      gaps.push(`skill-frontmatter: ${name}/SKILL.md has no frontmatter`);
-      continue;
-    }
-    if (fields.name !== name)
-      gaps.push(`skill-name: ${name}/SKILL.md names "${fields.name ?? ""}"`);
-    if (!fields.description)
-      gaps.push(`skill-description: ${name}/SKILL.md has no description`);
-  }
+  for (const name of skills) checkSkill(name, canonical, gaps);
 
   const linked = entries(links);
-  for (const name of linked) {
-    const link = join(links, name);
-    if (!lstatSync(link).isSymbolicLink()) {
-      gaps.push(`skill-link: .claude/skills/${name} is not a symlink`);
-      continue;
-    }
-    if (!skills.includes(name)) {
-      gaps.push(
-        `skill-link: .claude/skills/${name} has no .agents/skills/${name}`,
-      );
-      continue;
-    }
-    const target = readlinkSync(link);
-    const expected = join("..", "..", ".agents", "skills", name);
-    if (target !== expected)
-      gaps.push(
-        `skill-link: .claude/skills/${name} points at ${target}, not ${expected}`,
-      );
-  }
+  for (const name of linked) checkLink(name, links, skills, gaps);
 
   for (const name of skills) {
     if (!linked.includes(name))
