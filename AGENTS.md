@@ -17,6 +17,7 @@ The fleet roster and policy. It holds intent, not state.
 
 - Language and toolchain: Node for the validator and the `.mjs` helpers, pinned in `mise.toml`. Biome formats and gates complexity until the Bun toolchain migration recorded in `docs/exceptions.md`.
 - `repos.json` is the roster. `ignore.json` is the exclusion list. `policy.md` is the tier policy.
+- Hooks: `just hooks` installs the shared Lefthook jobs from `simpsonm09-projects/.github` at the `hooks-v2` tag; `lefthook-local.yml` is git-ignored. Never skip a hook: no `LEFTHOOK=0`, no `--no-verify`, and never create `lefthook-local.yml` (C7.11). The ruleset is the real gate.
 
 ## Skills
 
