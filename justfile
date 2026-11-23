@@ -32,7 +32,7 @@ complexity:
 
 # Run the AI-slop gate.
 aislop:
-    npx --yes aislop@0.16.1 ci
+    mise exec -- aislop ci
 
 # Validate the roster against the organization. `mise run test` holds the command.
 test:
